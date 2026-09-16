@@ -163,6 +163,115 @@
     }, FLAP_MS);
   }
 
+  // --- Invitado y confirmacion ---------------------------------------------
+  // El enlace lleva ?i=codigo; de ahi salen el nombre y los pases.
+  const ENDPOINT_RSVP = ""; // <- pega aqui la URL del Apps Script
+
+  const parametros = new URLSearchParams(window.location.search);
+  const codigo = (parametros.get("i") || "").trim().toLowerCase();
+  const lista = window.INVITADOS || {};
+  const invitado = lista[codigo] || null;
+
+  function enPases(n) {
+    return n === 1 ? "1 pase" : n + " pases";
+  }
+
+  if (invitado) {
+    document.querySelectorAll('[data-invitado="nombre"]').forEach((el) => {
+      el.textContent = invitado.n;
+    });
+    document.querySelectorAll('[data-invitado="pases"]').forEach((el) => {
+      el.textContent = enPases(invitado.p);
+    });
+    document.title = invitado.n + " · Yohana & José Luis";
+  } else {
+    // Sin codigo valido la carta sigue siendo legible: se ocultan los huecos
+    // personales en vez de mostrar un marcador de relleno.
+    document.querySelectorAll(".dedication, .rsvp-guest").forEach((el) => {
+      el.hidden = true;
+    });
+  }
+
+  const formRsvp = document.getElementById("rsvp-form");
+  const estadoRsvp = document.getElementById("rsvp-estado");
+  const cuantos = document.getElementById("rsvp-cuantos");
+  const selectPersonas = document.getElementById("rsvp-personas");
+
+  if (formRsvp && invitado) {
+    // Cuando hay un solo pase no hay nada que elegir.
+    if (invitado.p > 1 && selectPersonas) {
+      for (let i = invitado.p; i >= 1; i -= 1) {
+        const op = document.createElement("option");
+        op.value = String(i);
+        op.textContent = i === 1 ? "1 persona" : i + " personas";
+        selectPersonas.appendChild(op);
+      }
+    }
+
+    formRsvp.addEventListener("change", (e) => {
+      if (e.target.name !== "asiste") return;
+      if (cuantos) cuantos.hidden = !(e.target.value === "si" && invitado.p > 1);
+    });
+
+    const CLAVE_RSVP = "rsvp-" + codigo;
+    try {
+      const previo = localStorage.getItem(CLAVE_RSVP);
+      if (previo && estadoRsvp) {
+        estadoRsvp.textContent = "Ya nos respondiste el " + previo + ". Si te equivocaste, vuelve a enviarlo.";
+      }
+    } catch { /* El almacenamiento puede estar bloqueado; no es esencial. */ }
+
+    formRsvp.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const elegido = formRsvp.querySelector('input[name="asiste"]:checked');
+      if (!elegido) return;
+      const boton = document.getElementById("enviar-rsvp");
+      const asiste = elegido.value === "si";
+      const personas = !asiste ? 0 : (invitado.p > 1 && selectPersonas ? Number(selectPersonas.value) : invitado.p);
+
+      boton.disabled = true;
+      if (estadoRsvp) estadoRsvp.textContent = "Enviando…";
+
+      const datos = {
+        codigo: codigo,
+        nombre: invitado.n,
+        pases: invitado.p,
+        asiste: asiste ? "SI" : "NO",
+        personas: personas,
+        enviado: new Date().toISOString()
+      };
+
+      try {
+        if (!ENDPOINT_RSVP) throw new Error("sin endpoint");
+        // Apps Script no devuelve cabeceras CORS: con no-cors la peticion llega
+        // pero no podemos leer la respuesta. Ver la nota del README.
+        await fetch(ENDPOINT_RSVP, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(datos)
+        });
+        const fecha = new Date().toLocaleDateString("es-EC", { day: "numeric", month: "long" });
+        try { localStorage.setItem(CLAVE_RSVP, fecha); } catch { /* sin almacenamiento */ }
+        if (estadoRsvp) {
+          estadoRsvp.textContent = asiste
+            ? "¡Gracias! Te esperamos el 10 de octubre."
+            : "Gracias por avisarnos. Te vamos a extrañar.";
+        }
+        formRsvp.querySelectorAll("input, select, button").forEach((c) => { c.disabled = true; });
+      } catch {
+        boton.disabled = false;
+        if (estadoRsvp) {
+          estadoRsvp.textContent = "No pudimos enviarlo. Escríbenos por WhatsApp y lo anotamos.";
+        }
+      }
+    });
+  } else if (formRsvp) {
+    // Sin invitado identificado no hay a quien apuntar la respuesta.
+    formRsvp.hidden = true;
+    if (estadoRsvp) estadoRsvp.textContent = "Abre la invitación desde el enlace que te enviamos para confirmar.";
+  }
+
   // --- Ventana con los datos de transferencia -----------------------------
   const abrirCuenta = document.getElementById("abrir-cuenta");
   const modal = document.getElementById("modal-cuenta");

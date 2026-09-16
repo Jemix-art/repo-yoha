@@ -36,6 +36,7 @@
   <link rel="preload" href="fonts/cormorant-500.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/greatvibes-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="styles.css">
+  <script src="invitados.js" defer></script>
   <script src="script.js" defer></script>
 </head>
 
@@ -112,8 +113,8 @@
         <div class="ornament" aria-hidden="true"></div>
 
         <section class="letter-section dedication seccion-solemne" aria-labelledby="dedicatoria">
-          <h2 id="dedicatoria">Sr. Jordán Román</h2>
-          <p class="invitation-phrase">Guardamos un lugar<br><strong>1 pase</strong><br>a tu nombre.</p>
+          <h2 id="dedicatoria" data-invitado="nombre">Les esperamos</h2>
+          <p class="invitation-phrase">Guardamos un lugar<br><strong data-invitado="pases">2 pases</strong><br>a tu nombre.</p>
         </section>
 
         <div class="ornament" aria-hidden="true"></div>
@@ -239,12 +240,32 @@
 
         <section class="letter-section rsvp seccion-practica" aria-labelledby="confirmacion">
           <h2 id="confirmacion">Confirmación</h2>
-          <p class="rsvp-guest">Sr. Jordán Román <span aria-hidden="true">·</span> 1 pase</p>
+          <p class="rsvp-guest"><span data-invitado="nombre">Les esperamos</span> <span aria-hidden="true">·</span> <span data-invitado="pases">2 pases</span></p>
           <p>Necesitamos saber cuántos seremos para que no falte lugar en la mesa. Cuéntanos antes del 24 de septiembre.
           </p>
-          <button class="button button-primary" id="confirmar-asistencia" type="button" disabled data-confirm-url=""
-            aria-disabled="true" aria-describedby="confirmacion-pendiente">Confirmar asistencia</button>
-          <p class="action-note" id="confirmacion-pendiente">Te mandamos el enlace por aparte.</p>
+
+          <form class="rsvp-form" id="rsvp-form">
+            <fieldset class="rsvp-opciones">
+              <legend class="sr-only">¿Podrás acompañarnos?</legend>
+              <label class="rsvp-op">
+                <input type="radio" name="asiste" value="si" required>
+                <span>Ahí estaremos</span>
+              </label>
+              <label class="rsvp-op">
+                <input type="radio" name="asiste" value="no" required>
+                <span>No podremos ir</span>
+              </label>
+            </fieldset>
+
+            <p class="rsvp-cuantos" id="rsvp-cuantos" hidden>
+              <label for="rsvp-personas">¿Cuántos vendrán?</label>
+              <select id="rsvp-personas" name="personas"></select>
+            </p>
+
+            <button class="button button-primary" id="enviar-rsvp" type="submit">Enviar confirmación</button>
+          </form>
+
+          <p class="action-note" id="rsvp-estado" role="status" aria-live="polite"></p>
         </section>
 
         <div class="ornament" aria-hidden="true"></div>

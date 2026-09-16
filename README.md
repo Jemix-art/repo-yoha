@@ -48,6 +48,14 @@ enlaces no resuelven rutas relativas y la vista previa saldría sin imagen.
 
 `.nojekyll` evita que GitHub procese el sitio con Jekyll.
 
+## Invitados y confirmaciones
+
+Cada invitado tiene su enlace: `?i=codigo`. Los datos salen de `invitados.js`,
+generado desde `invitados y pases.xlsx` (27 invitaciones, 54 pases). Los enlaces
+listos para repartir están en `enlaces-invitados.txt`.
+
+Para que las respuestas caigan en una hoja de cálculo, seguir `CONFIRMACIONES.md`.
+
 ## Pendiente
 
-- El botón de confirmación está deshabilitado (`data-confirm-url=""`).
+- Pegar la URL del Apps Script en `ENDPOINT_RSVP` (`script.js`).

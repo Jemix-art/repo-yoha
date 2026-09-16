@@ -512,6 +512,30 @@ body[data-modal="abierto"] { overflow: hidden; }
 .timeline li::before { content: ""; position: absolute; left: -5px; top: 8px; width: 9px; height: 9px; border: 1px solid var(--gold); border-radius: 50%; background: var(--paper); }
 .timeline-time { font-size: var(--t-sm); font-weight: 600; letter-spacing: .06em; margin-bottom: 4px; }
 .timeline h3 { color: var(--wine); }
+/* --- Confirmacion -------------------------------------------------------- */
+.rsvp-form { margin-top: 24px; }
+.rsvp-opciones { display: grid; gap: 10px; max-width: 320px; margin: 0 auto; padding: 0; border: 0; }
+.rsvp-op {
+  display: flex; align-items: center; gap: 12px;
+  min-height: 52px; padding: 12px 18px;
+  border: 1px solid #64293f3d; border-radius: 2px;
+  color: var(--ink); cursor: pointer; text-align: left;
+  transition: border-color 180ms ease, background 180ms ease;
+}
+.rsvp-op:hover { border-color: #64293f8c; background: #64293f08; }
+.rsvp-op input { accent-color: var(--wine); width: 19px; height: 19px; flex: 0 0 auto; margin: 0; }
+.rsvp-op:has(input:checked) { border-color: var(--wine); background: #64293f12; }
+.rsvp-op:has(input:focus-visible) { outline: 2px solid var(--wine); outline-offset: 3px; }
+.rsvp-cuantos { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 18px; }
+.rsvp-cuantos label { font-size: var(--t-sm); color: var(--muted); }
+#rsvp-personas {
+  min-height: 48px; padding: 8px 14px;
+  border: 1px solid #64293f4d; border-radius: 2px;
+  background: var(--paper); color: var(--ink);
+  font: 500 var(--t-sm) var(--sans);
+}
+#enviar-rsvp { margin-top: 22px; }
+#rsvp-estado:empty { display: none; }
 .rsvp-guest { margin-bottom: 24px; font: var(--t-md)/1.65 var(--serif); font-variant-numeric: lining-nums; }
 .rsvp-guest span { color: var(--gold); margin-inline: 4px; }
 .button-primary[href] { background: var(--wine); color: var(--paper); }
