@@ -172,16 +172,25 @@
   const lista = window.INVITADOS || {};
   const invitado = lista[codigo] || null;
 
-  function enPases(n) {
-    return n === 1 ? "1 pase" : n + " pases";
+  // Dos palabras para lo mismo: "pases" en lo practico, "lugares" en la
+  // dedicatoria. Cada hueco del HTML pide la suya con data-invitado.
+  const PALABRAS = {
+    pases: ["1 pase", " pases"],
+    lugares: ["1 lugar", " lugares"]
+  };
+  function enCantidad(n, palabra) {
+    const par = PALABRAS[palabra] || PALABRAS.pases;
+    return n === 1 ? par[0] : n + par[1];
   }
 
   if (invitado) {
     document.querySelectorAll('[data-invitado="nombre"]').forEach((el) => {
       el.textContent = invitado.n;
     });
-    document.querySelectorAll('[data-invitado="pases"]').forEach((el) => {
-      el.textContent = enPases(invitado.p);
+    Object.keys(PALABRAS).forEach((palabra) => {
+      document.querySelectorAll('[data-invitado="' + palabra + '"]').forEach((el) => {
+        el.textContent = enCantidad(invitado.p, palabra);
+      });
     });
     document.title = invitado.n + " · Yohana & José Luis";
   } else {
